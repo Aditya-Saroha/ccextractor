@@ -356,21 +356,35 @@ unsigned get_decoder_line_encoded(struct encoder_ctx *ctx, unsigned char *buffer
 			buffer = close_tag(ctx, buffer, tagstack, 'I', &underlined, &italics, &changed_font);
 		}
 		int bytes = 0;
-		switch (ctx->encoding)
+		if (ctx->write_format == CCX_OF_SMPTETT && (line[i] == '&' || line[i] == '<' || line[i] == '>'))
 		{
-			case CCX_ENC_UTF_8:
-				bytes = get_char_in_utf_8(buffer, line[i]);
-				break;
-			case CCX_ENC_LATIN_1:
-				get_char_in_latin_1(buffer, line[i]);
-				bytes = 1;
-				break;
-			case CCX_ENC_UNICODE:
-				get_char_in_unicode(buffer, line[i]);
-				bytes = 2;
-				break;
-			case CCX_ENC_ASCII: // Consider to remove ASCII encoding or write get_char_in_ascii(...)
-				break;
+			const char *entity = NULL;
+			if (line[i] == '&')
+				entity = "&amp;";
+			else if (line[i] == '<')
+				entity = "&lt;";
+			else if (line[i] == '>')
+				entity = "&gt;";
+			bytes = encode_line(ctx, buffer, (unsigned char *)entity);
+		}
+		else
+		{
+			switch (ctx->encoding)
+			{
+				case CCX_ENC_UTF_8:
+					bytes = get_char_in_utf_8(buffer, line[i]);
+					break;
+				case CCX_ENC_LATIN_1:
+					get_char_in_latin_1(buffer, line[i]);
+					bytes = 1;
+					break;
+				case CCX_ENC_UNICODE:
+					get_char_in_unicode(buffer, line[i]);
+					bytes = 2;
+					break;
+				case CCX_ENC_ASCII: // Consider to remove ASCII encoding or write get_char_in_ascii(...)
+					break;
+			}
 		}
 		buffer += bytes;
 	}

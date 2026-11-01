@@ -396,7 +396,7 @@ int write_cc_buffer_as_smptett(struct eia608_screen *data, struct encoder_ctx *c
 							if (written > 0 && (size_t)written < remaining)
 								final_len += written;
 
-							char *temp_pointer = strchr((const char *)(context->subline), '#'); // locating color code
+							char *temp_pointer = strchr(start, '#'); // locating color code
 
 							char color_code[8];
 							if (temp_pointer)
@@ -408,7 +408,7 @@ int write_cc_buffer_as_smptett(struct eia608_screen *data, struct encoder_ctx *c
 								color_code[0] = '\0';
 							}
 
-							temp_pointer = strchr((const char *)(context->subline), '>'); // The content is in between <font ..> and </font>
+							temp_pointer = strchr(start, '>'); // The content is in between <font ..> and </font>
 
 							if (temp_pointer)
 							{
